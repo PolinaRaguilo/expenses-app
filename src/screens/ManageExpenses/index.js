@@ -1,16 +1,23 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
-import React, {useContext, useLayoutEffect} from 'react';
+import React, {useContext, useLayoutEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import IconButton from '../../components/UI/IconButton';
 import {GLOBAL_STYLES} from '../../constant/styles';
 import Button from '../../components/UI/Button';
 import {ExpensesContext} from '../../store/expense-context';
+import ExpenseForm from '../../components/ExpenseForm';
 
 const ManageExpenses = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const {deleteExpense, addExpense, updateExpense} =
     useContext(ExpensesContext);
+
+  const [inputValues, setInputValues] = useState({
+    amount: '',
+    date: '',
+    title: '',
+  });
 
   const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
@@ -25,18 +32,15 @@ const ManageExpenses = () => {
   };
 
   const confirmHandler = () => {
+    const formattedData = {
+      ...inputValues,
+      amount: +inputValues.amount,
+      date: new Date(inputValues.date),
+    };
     if (isEditing) {
-      updateExpense(editedExpenseId, {
-        title: 'upd',
-        amount: 19,
-        date: new Date('2023-08-01'),
-      });
+      updateExpense(editedExpenseId, formattedData);
     } else {
-      addExpense({
-        title: 'new',
-        amount: 12,
-        date: new Date('2023-08-03'),
-      });
+      addExpense(formattedData);
     }
     navigation.goBack();
   };
@@ -49,6 +53,7 @@ const ManageExpenses = () => {
 
   return (
     <View style={styles.container}>
+      <ExpenseForm inputValues={inputValues} setInputValues={setInputValues} />
       <View style={styles.buttonsWrapper}>
         <Button style={styles.button} variant="link" onPress={cancelHandler}>
           Cancel
