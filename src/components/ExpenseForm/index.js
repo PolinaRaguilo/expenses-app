@@ -9,32 +9,46 @@ const ExpenseForm = ({inputValues, setInputValues}) => {
       <View style={styles.inputsRow}>
         <Input
           label="Amount"
+          isValid={!!inputValues.amount.value && inputValues.amount.isValid}
           textInputConfig={{
             keyboardType: 'decimal-pad',
-            onChangeText: value =>
-              setInputValues({...inputValues, amount: value}),
-            value: inputValues.amount,
+            onChangeText: value => {
+              setInputValues({
+                ...inputValues,
+                amount: {...inputValues.amount, value},
+              });
+            },
+            value: inputValues.amount.value,
           }}
           style={styles.rowInput}
         />
         <Input
           label="Date"
+          isValid={!!inputValues.date.value && inputValues.date.isValid}
           textInputConfig={{
             placeholder: 'YYYY-MM-DD',
             maxLength: 10,
             onChangeText: value =>
-              setInputValues({...inputValues, date: value}),
-            value: inputValues.date,
+              setInputValues({
+                ...inputValues,
+                date: {...inputValues.date, value},
+              }),
+            value: inputValues.date.value,
           }}
           style={styles.rowInput}
         />
       </View>
       <Input
         label="Title"
+        isValid={!!inputValues.title.value && inputValues.title.isValid}
         textInputConfig={{
           multiline: true,
-          onChangeText: value => setInputValues({...inputValues, title: value}),
-          value: inputValues.title,
+          onChangeText: value =>
+            setInputValues({
+              ...inputValues,
+              title: {...inputValues.title, value},
+            }),
+          value: inputValues.title.value,
         }}
       />
     </View>

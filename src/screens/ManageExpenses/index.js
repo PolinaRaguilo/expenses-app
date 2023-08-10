@@ -1,26 +1,39 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useContext, useLayoutEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {Alert, StyleSheet, View} from 'react-native';
 import IconButton from '../../components/UI/IconButton';
 import {GLOBAL_STYLES} from '../../constant/styles';
 import Button from '../../components/UI/Button';
 import {ExpensesContext} from '../../store/expense-context';
 import ExpenseForm from '../../components/ExpenseForm';
+import {getFormattedDate} from '../../utils/date';
 
 const ManageExpenses = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const {deleteExpense, addExpense, updateExpense} =
+  const {deleteExpense, addExpense, updateExpense, expenses} =
     useContext(ExpensesContext);
-
-  const [inputValues, setInputValues] = useState({
-    amount: '',
-    date: '',
-    title: '',
-  });
 
   const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
+  const selectedExpense = expenses.find(item => item.id === editedExpenseId);
+
+  const [inputValues, setInputValues] = useState({
+    amount: {
+      value: selectedExpense?.amount?.toString() || '',
+      isValid: !!selectedExpense?.amount,
+    },
+    date: {
+      value: selectedExpense?.date
+        ? getFormattedDate(selectedExpense?.date)
+        : '',
+      isValid: !!selectedExpense?.date,
+    },
+    title: {
+      value: selectedExpense?.title || '',
+      isValid: !!selectedExpense?.title,
+    },
+  });
 
   const deleteHandler = () => {
     deleteExpense(editedExpenseId);
@@ -33,10 +46,27 @@ const ManageExpenses = () => {
 
   const confirmHandler = () => {
     const formattedData = {
-      ...inputValues,
-      amount: +inputValues.amount,
-      date: new Date(inputValues.date),
+      amount: +inputValues.amount.value,
+      date: new Date(inputValues.date.value),
+      title: inputValues.title.value,
     };
+    const isAmountValid =
+      !isNaN(formattedData.amount) && formattedData.amount > 0;
+    const isDateValid = formattedData.date.toString() !== 'Invalid Date';
+    const isTitleValid = formattedData.title.trim().length > 0;
+
+    if (!isAmountValid || !isDateValid || !isTitleValid) {
+      Alert.alert('Invalid data', 'Check you data format');
+      setInputValues(values => {
+        return {
+          amount: {...values.amount, isValid: isAmountValid},
+          date: {...values.date, isValid: isDateValid},
+          title: {...values.title, isValid: isTitleValid},
+        };
+      });
+      return;
+    }
+
     if (isEditing) {
       updateExpense(editedExpenseId, formattedData);
     } else {
