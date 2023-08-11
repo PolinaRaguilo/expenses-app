@@ -9,7 +9,7 @@ const ExpenseForm = ({inputValues, setInputValues}) => {
       <View style={styles.inputsRow}>
         <Input
           label="Amount"
-          isValid={!!inputValues.amount.value && inputValues.amount.isValid}
+          isValid={inputValues.amount.isValid}
           textInputConfig={{
             keyboardType: 'decimal-pad',
             onChangeText: value => {
@@ -24,7 +24,7 @@ const ExpenseForm = ({inputValues, setInputValues}) => {
         />
         <Input
           label="Date"
-          isValid={!!inputValues.date.value && inputValues.date.isValid}
+          isValid={inputValues.date.isValid}
           textInputConfig={{
             placeholder: 'YYYY-MM-DD',
             maxLength: 10,
@@ -40,7 +40,7 @@ const ExpenseForm = ({inputValues, setInputValues}) => {
       </View>
       <Input
         label="Title"
-        isValid={!!inputValues.title.value && inputValues.title.isValid}
+        isValid={inputValues.title.isValid}
         textInputConfig={{
           multiline: true,
           onChangeText: value =>

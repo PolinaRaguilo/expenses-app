@@ -28,17 +28,17 @@ const ManageExpenses = () => {
   const [inputValues, setInputValues] = useState({
     amount: {
       value: selectedExpense?.amount?.toString() || '',
-      isValid: !!selectedExpense?.amount,
+      isValid: selectedExpense?.amount ? !!selectedExpense.amount : true,
     },
     date: {
       value: selectedExpense?.date
         ? getFormattedDate(selectedExpense?.date)
         : '',
-      isValid: !!selectedExpense?.date,
+      isValid: selectedExpense?.date ? !!selectedExpense?.date : true,
     },
     title: {
       value: selectedExpense?.title || '',
-      isValid: !!selectedExpense?.title,
+      isValid: selectedExpense?.title ? !!selectedExpense?.title : true,
     },
   });
 
@@ -54,7 +54,6 @@ const ManageExpenses = () => {
   };
 
   const confirmHandler = async () => {
-    setIsSubmitting(true);
     const formattedData = {
       amount: +inputValues.amount.value,
       date: new Date(inputValues.date.value),
@@ -77,6 +76,7 @@ const ManageExpenses = () => {
       return;
     }
 
+    setIsSubmitting(true);
     if (isEditing) {
       updateExpenseCntxt(editedExpenseId, formattedData);
       await updateExpense(editedExpenseId, formattedData);
