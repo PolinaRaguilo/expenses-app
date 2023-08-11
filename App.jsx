@@ -37,18 +37,6 @@ const ExpensesOverview = () => {
         ),
       })}>
       <BottomTabs.Screen
-        name="AllExpenses"
-        component={AllExpenses}
-        options={{
-          title: 'All Expenses',
-          tabBarLabel: 'All',
-          // eslint-disable-next-line react/no-unstable-nested-components
-          tabBarIcon: ({color, size}) => (
-            <Icon name="calendar" size={size} color={color} />
-          ),
-        }}
-      />
-      <BottomTabs.Screen
         name="RecentExpenses"
         component={RecentExpenses}
         options={{
@@ -57,6 +45,18 @@ const ExpensesOverview = () => {
           // eslint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({color, size}) => (
             <Icon name="hourglass" size={size} color={color} />
+          ),
+        }}
+      />
+      <BottomTabs.Screen
+        name="AllExpenses"
+        component={AllExpenses}
+        options={{
+          title: 'All Expenses',
+          tabBarLabel: 'All',
+          // eslint-disable-next-line react/no-unstable-nested-components
+          tabBarIcon: ({color, size}) => (
+            <Icon name="calendar" size={size} color={color} />
           ),
         }}
       />

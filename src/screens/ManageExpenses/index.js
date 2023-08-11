@@ -7,17 +7,24 @@ import Button from '../../components/UI/Button';
 import {ExpensesContext} from '../../store/expense-context';
 import ExpenseForm from '../../components/ExpenseForm';
 import {getFormattedDate} from '../../utils/date';
+import {deleteExpense, saveExpense, updateExpense} from '../../utils/db';
+import LoadingOverlay from '../../components/UI/LoadingOverlay';
 
 const ManageExpenses = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const {deleteExpense, addExpense, updateExpense, expenses} =
-    useContext(ExpensesContext);
+  const {
+    deleteExpense: deleteExpenseCNTX,
+    addExpense,
+    updateExpense: updateExpenseCntxt,
+    expenses,
+  } = useContext(ExpensesContext);
 
   const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
   const selectedExpense = expenses.find(item => item.id === editedExpenseId);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [inputValues, setInputValues] = useState({
     amount: {
       value: selectedExpense?.amount?.toString() || '',
@@ -35,8 +42,10 @@ const ManageExpenses = () => {
     },
   });
 
-  const deleteHandler = () => {
-    deleteExpense(editedExpenseId);
+  const deleteHandler = async () => {
+    setIsSubmitting(true);
+    await deleteExpense(editedExpenseId);
+    deleteExpenseCNTX(editedExpenseId);
     navigation.goBack();
   };
 
@@ -44,7 +53,8 @@ const ManageExpenses = () => {
     navigation.goBack();
   };
 
-  const confirmHandler = () => {
+  const confirmHandler = async () => {
+    setIsSubmitting(true);
     const formattedData = {
       amount: +inputValues.amount.value,
       date: new Date(inputValues.date.value),
@@ -68,9 +78,11 @@ const ManageExpenses = () => {
     }
 
     if (isEditing) {
-      updateExpense(editedExpenseId, formattedData);
+      updateExpenseCntxt(editedExpenseId, formattedData);
+      await updateExpense(editedExpenseId, formattedData);
     } else {
-      addExpense(formattedData);
+      const createdId = await saveExpense(formattedData);
+      addExpense({...formattedData, id: createdId});
     }
     navigation.goBack();
   };
@@ -81,7 +93,9 @@ const ManageExpenses = () => {
     });
   }, [navigation, isEditing]);
 
-  return (
+  return isSubmitting ? (
+    <LoadingOverlay />
+  ) : (
     <View style={styles.container}>
       <ExpenseForm inputValues={inputValues} setInputValues={setInputValues} />
       <View style={styles.buttonsWrapper}>
